@@ -13,7 +13,7 @@ const createWindow = () => {
 		contextIsolation: false
 	}
   });
-  // win.removeMenu();
+  win.removeMenu();
   win.resizable = false;
   win.loadFile('index.html');
 }
@@ -37,11 +37,18 @@ app.on('window-all-closed', () => {
 ipcMain.on('spawn-process', (event, arg) => {
   // Spawning a new Node.js process
   console.log('spawn process called', arg);
-  const child = fork(path.join(__dirname, 'run-script.js'), arg, {
-	stdio: 'inherit'
+  const child = fork(path.join(__dirname, 'run-script.js'), arg, { silent: true });
+  let out = ``;
+  child.stdout.on('data', (msg) => {
+	console.log(`Message from child: ${msg}`);
+	event.sender.send('output-child', msg)
+  });
+   child.stderr.on('data', (msg) => {
+	console.log(`Error message from child: ${msg}`);
+	event.sender.send('output-child', msg)
   });
   child.on('exit', (code) => {
 	console.log(`exited with code ${code}`);
-    event.sender.send('finished-write');
+    event.sender.send('finished-write', code);
   });
 });

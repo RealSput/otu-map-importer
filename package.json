@@ -4,7 +4,7 @@
   "main": "index.js",
   "scripts": {
     "start": "electron .",
-	"build": "npx electron-builder build --win portable",
+    "build": "yarn add osu-classes osu-parsers circulator @g-js-api/g.js && npx electron-builder build --win portable",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "license": "ISC",
@@ -12,11 +12,12 @@
     "electron": "23.1.3"
   },
   "dependencies": {
-     "@g-js-api/g.js": "^3.11.5",
-	 "awesome-logging": "^1.1.4",
-	 "circulator": "^1.2.0",
-	 "osu-parsers": "^4.1.7",
-	 "osu-pp-calculator": "^0.1.7",
-	 "osu-standard-stable": "^5.0.0"
-   }
+    "@g-js-api/g.js": "^4.1.1",
+    "awesome-logging": "^1.1.4",
+    "circulator": "^1.2.0",
+    "osu-classes": "^3.1.0",
+    "osu-parsers": "^4.1.7",
+    "osu-pp-calculator": "^0.1.7",
+    "osu-standard-stable": "^5.0.0"
+  }
 }

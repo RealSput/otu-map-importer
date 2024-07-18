@@ -158,11 +158,19 @@
 		
 		let fs = require('fs');
 		let path = require('path');
+		let cmdOutput = '';
+		ipcRenderer.on('output-child', (event, code) => {
+			cmdOutput += code;
+		});
 		
 		let importOsu = (...args) => {
-			return new Promise((resolve) => {
+			return new Promise((resolve, reject) => {
 				ipcRenderer.send('spawn-process', args.filter(x => x));
-				ipcRenderer.on('finished-write', (event, message) => {
+				ipcRenderer.on('finished-write', (event, code) => {
+					if (code) {
+						alert("Import process has failed. Output from child process (only useful for debugging): " + cmdOutput);
+						reject(false);
+					}
 					resolve(true);
 				});
 			});
