@@ -148,12 +148,14 @@
 		<h1 class="center-header"> Advanced Settings </h1>
 		<p class="page-text"> Level Name (if not filled, most recent level will be written to) </p>
 		<input class="input" id="level-name" />
-		<p class="page-text"> Custom Song ID (if not filled, song ID will be chosen automatically) </p>
+		<p class="page-text"> Custom Song ID (if not filled, an unused song ID will be chosen automatically) </p>
 		<input class="input" id="song-id" />
 		<button id="finish" class="select" role="button"> Import map into GD </button>
 	</div>
 	<script>
 		const { ipcRenderer } = require('electron');
+		const { exec } = require('child_process');
+		
 		let fs = require('fs');
 		let path = require('path');
 		
@@ -177,6 +179,11 @@
 			// Event listener for when a file is selected
 			fileInput.onchange = event => {
 			  const file = event.target.files[0];
+			  if (accept !== '*' && !file.path.endsWith(accept)) {
+				alert(`Only files ending with ${accept} can be used! Try using a file ending with ${accept} instead.`);
+				reject(false);
+				return;
+			  }
 			  if (file && !filePath) {
 				const reader = new FileReader();
 				
@@ -227,6 +234,26 @@
 		  }
 		  index++
 		}
+		const checkIfProcessIsRunning = (exeName) => {
+			return new Promise((resolve, reject) => {
+				exec('tasklist', (err, stdout, stderr) => {
+					if (err) {
+						reject(`Error executing tasklist: ${err}`);
+						return;
+					}
+
+					if (stderr) {
+						reject(`Error: ${stderr}`);
+						return;
+					}
+
+					const processes = stdout.split('\n');
+					const isRunning = processes.some(process => process.toLowerCase().includes(exeName.toLowerCase()));
+
+					resolve(isRunning);
+				});
+			});
+		};
 		let osuFile;
 		let mp3buf;
 		document.querySelector('#select-osu').addEventListener('click', async () => {
@@ -234,7 +261,7 @@
 			step();
 		});
 		document.querySelector('#select-song').addEventListener('click', async () => {
-			mp3buf = await readFile(true, 'audio/mpeg');
+			mp3buf = await readFile(true, '.mp3');
 			step();
 		});
 		function getRandomFourDigitInteger() {
@@ -250,14 +277,34 @@
 			return parseInt(randDigit);
 		};
 		let finish = document.querySelector('#finish');
+		let import_loop = () => {
+			let arrs = Array(3).fill(0).map((_, i) => 'Importing file' + '.'.repeat(i + 1));
+			let arr_ind = 0;
+			return setInterval(() => {
+				if (arr_ind == 3) arr_ind = 0;
+				finish.innerText = arrs[arr_ind];
+				arr_ind++;
+			}, 250);
+		};
 		let complete = async () => {
+			let interval = import_loop();
+			finish.style.background = 'lightgrey';
+			let isGDOpen = await checkIfProcessIsRunning('GeometryDash.exe');
+			if (isGDOpen) {
+				alert("Geometry Dash is currently open! Geometry Dash must be closed during the importing process, so please close GeometryDash.exe and try again.");
+				finish.style.background = '#FFFFFF';
+				finish.innerText = "Import map into GD";
+				clearInterval(interval);
+				return;
+			};
 			let levelName = document.querySelector('#level-name').value || undefined;
 			let songID = document.querySelector('#song-id').value || genRandID();
-			finish.style.background = 'lightgrey';
 			finish.style.cursor = "wait";
 			finish.disabled = true;
 			fs.writeFileSync(path.join(gd_path, songID + '.mp3'), mp3buf);
 			await importOsu(osuFile, songID, levelName);
+			clearInterval(interval);
+			finish.innerText = "Import map into GD";
 			finish.style.background = '#FFFFFF';
 			finish.style.cursor = "pointer";
 			finish.disabled = false;
