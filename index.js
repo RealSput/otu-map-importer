@@ -1,5 +1,5 @@
 let { app, BrowserWindow, ipcMain } = require('electron/main');
-let { spawn } = require('child_process');
+let { fork } = require('child_process');
 let { fileURLToPath } = require('url');
 let path = require('path');
 
@@ -13,6 +13,7 @@ const createWindow = () => {
 		contextIsolation: false
 	}
   });
+  win.removeMenu();
   win.resizable = false;
   win.loadFile('index.html');
 }
@@ -35,8 +36,12 @@ app.on('window-all-closed', () => {
 
 ipcMain.on('spawn-process', (event, arg) => {
   // Spawning a new Node.js process
-  const child = spawn('node', [path.join(__dirname, 'run-script.js'), ...arg], { stdio: "inherit" });
+  console.log('spawn process called', arg);
+  const child = fork(path.join(__dirname, 'run-script.js'), arg, {
+	stdio: 'inherit'
+  });
   child.on('exit', (code) => {
+	console.log(`exited with code ${code}`);
     event.sender.send('finished-write');
   });
 });
