@@ -1,5 +1,6 @@
 # otu-map-importer
 GUI for importing Osu! maps into Otu!
+Maintained by bestgamer08 (Discord username for DMs)
 
 # Instructions
 - Copy the Otu! level (ID: comig soom).
