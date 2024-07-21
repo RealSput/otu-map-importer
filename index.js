@@ -1,6 +1,5 @@
 let { app, BrowserWindow, ipcMain } = require('electron/main');
 let { fork } = require('child_process');
-let { fileURLToPath } = require('url');
 let path = require('path');
 
 const createWindow = () => {
@@ -13,7 +12,7 @@ const createWindow = () => {
       contextIsolation: false
     }
   });
-  // win.removeMenu();
+  win.removeMenu();
   win.resizable = false;
   win.loadFile('index.html');
 }

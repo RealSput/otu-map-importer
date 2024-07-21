@@ -405,7 +405,7 @@
 			let existsAlready = await hasMatchingFile(mp3buf, gd_path);
 			if (!existsAlready) fs.writeFileSync(full_song_path, mp3buf);
 			else {
-				console.log('file path not overriden, copy found', existsAlready);
+				console.log('file path set to an existing file', existsAlready);
 				full_song_path = path.join(gd_path, existsAlready);
 			}
 			try {
