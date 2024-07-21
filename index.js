@@ -7,13 +7,13 @@ const createWindow = () => {
   const win = new BrowserWindow({
     width: 800,
     height: 600,
-	webPreferences: { 
-		devTools: true,
-		nodeIntegration: true,
-		contextIsolation: false
-	}
+    webPreferences: {
+      devTools: true,
+      nodeIntegration: true,
+      contextIsolation: false
+    }
   });
-  win.removeMenu();
+  // win.removeMenu();
   win.resizable = false;
   win.loadFile('index.html');
 }
@@ -39,12 +39,12 @@ ipcMain.on('spawn-process', (event, arg) => {
   console.log('spawn process called', arg);
   const child = fork(path.join(__dirname, 'run-script.js'), arg, { silent: true });
   let out = ``;
-   child.stderr.on('data', (msg) => {
-	console.log(`Error message from child: ${msg}`);
-	event.sender.send('output-child', msg)
+  child.stderr.on('data', (msg) => {
+    console.log(`Error message from child: ${msg}`);
+    event.sender.send('output-child', msg)
   });
   child.on('exit', (code) => {
-	console.log(`exited with code ${code}`);
+    console.log(`exited with code ${code}`);
     event.sender.send('finished-write', code);
   });
 });

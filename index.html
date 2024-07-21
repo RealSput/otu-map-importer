@@ -1,141 +1,159 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <meta charset="UTF-8" />
-    <title>Otu! Map Importer</title>
+
+<head>
+	<meta charset="UTF-8" />
+	<title>Otu! Map Importer</title>
 	<style>
-	@import url('https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap');
-	body {
-		background: rgb(43, 41, 41)
-	}
-	.centered {
-	  position: fixed;
-	  flex-wrap: wrap;
-	  font-family: "Roboto", sans-serif;
-	  color: white;
-	  display: flex;
-	  justify-content: center;
-	  align-items: center;
-	  height: 100vh;
-	  width: 100%;
-	  transition: transform 0.5s ease; /* Smooth transition on transform */
-	}
-	.select {
-	  position: relative;
-	  align-items: center;
-	  background: #FFFFFF;
-	  border: 0 solid #E2E8F0;
-	  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-	  box-sizing: border-box;
-	  color: #1A202C;
-	  display: inline-flex;
-	  font-family: Inter, sans-serif;
-	  font-size: 1rem;
-	  font-weight: 700;
-	  height: 56px;
-	  justify-content: center;
-	  line-height: 24px;
-	  overflow-wrap: break-word;
-	  padding: 24px;
-	  text-decoration: none;
-	  width: auto;
-	  border-radius: 8px;
-	  cursor: pointer;
-	  user-select: none;
-	  -webkit-user-select: none;
-	  touch-action: manipulation;
-	  flex-basis: 65%;
-	}
-	#select-song {
-		flex-basis: 74%;
-	}
-	#fileInput {
-		display: none;
-	}
-	body {
-		margin: 0;
-		padding: 0;
-	}
-	.bar {
-		width: 33.33%;
-		height: 5px;
-		background-color: lightgrey;
-		position: fixed;
-		top: 0;
-		overflow: hidden; /* Hides overflow so the animation only shows within the bar */
-	}
-	.bar + .bar {
-		margin-left: 2px;
-	}
-	#bar1 {
-		left: 0;
-		position: relative; /* Use relative position for absolute positioning of pseudo-element */
-	}
-	#bar2 {
-		left: calc(33.33% + 2px);
-	}
-	#bar3 {
-		left: calc(66.66% + 6px);
-	}
+		@import url('https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap');
 
-	@keyframes expandLine {
-		0% {
-			width: 0;
+		body {
+			background: rgb(43, 41, 41)
 		}
-		100% {
+
+		.centered {
+			position: fixed;
+			flex-wrap: wrap;
+			font-family: "Roboto", sans-serif;
+			color: white;
+			display: flex;
+			justify-content: center;
+			align-items: center;
+			height: 100vh;
 			width: 100%;
+			transition: transform 0.5s ease;
+			/* Smooth transition on transform */
 		}
-	}
-	
-	.page2 {
-		transform: translateX(calc(100vw));
-	}
-	
-	.page3 {
-		transform: translateX(calc(200vw));
-	}
-	.input {
-	  max-width: 190px;
-	  background-color: #f5f5f5;
-	  color: #242424;
-	  padding: .15rem .5rem;
-	  min-height: 40px;
-	  border-radius: 4px;
-	  outline: none;
-	  border: none;
-	  line-height: 1.15;
-	  box-shadow: 0px 10px 20px -18px;
-	}
 
-	.input:focus {
-	  border-bottom: 2px solid #5b5fc7;
-	  border-radius: 4px 4px 2px 2px;
-	}
+		.select {
+			position: relative;
+			align-items: center;
+			background: #FFFFFF;
+			border: 0 solid #E2E8F0;
+			box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+			box-sizing: border-box;
+			color: #1A202C;
+			display: inline-flex;
+			font-family: Inter, sans-serif;
+			font-size: 1rem;
+			font-weight: 700;
+			height: 56px;
+			justify-content: center;
+			line-height: 24px;
+			overflow-wrap: break-word;
+			padding: 24px;
+			text-decoration: none;
+			width: auto;
+			border-radius: 8px;
+			cursor: pointer;
+			user-select: none;
+			-webkit-user-select: none;
+			touch-action: manipulation;
+			flex-basis: 65%;
+		}
 
-	.input:hover {
-	  outline: 1px solid lightgrey;
-	}
-	
-	.page-text {
-	  flex-basis: 65%;
-	}
-	
-	.center-header {
-		flex-basis: 100%;
-		transform: translateX(32vw);
-	}
+		#select-song {
+			flex-basis: 74%;
+		}
+
+		#fileInput {
+			display: none;
+		}
+
+		body {
+			margin: 0;
+			padding: 0;
+		}
+
+		.bar {
+			width: 33.33%;
+			height: 5px;
+			background-color: lightgrey;
+			position: fixed;
+			top: 0;
+			overflow: hidden;
+			/* Hides overflow so the animation only shows within the bar */
+		}
+
+		.bar+.bar {
+			margin-left: 2px;
+		}
+
+		#bar1 {
+			left: 0;
+			position: relative;
+			/* Use relative position for absolute positioning of pseudo-element */
+		}
+
+		#bar2 {
+			left: calc(33.33% + 2px);
+		}
+
+		#bar3 {
+			left: calc(66.66% + 6px);
+		}
+
+		@keyframes expandLine {
+			0% {
+				width: 0;
+			}
+
+			100% {
+				width: 100%;
+			}
+		}
+
+		.page2 {
+			transform: translateX(calc(100vw));
+		}
+
+		.page3 {
+			transform: translateX(calc(200vw));
+		}
+
+		.input {
+			max-width: 190px;
+			background-color: #f5f5f5;
+			color: #242424;
+			padding: .15rem .5rem;
+			min-height: 40px;
+			border-radius: 4px;
+			outline: none;
+			border: none;
+			line-height: 1.15;
+			box-shadow: 0px 10px 20px -18px;
+		}
+
+		.input:focus {
+			border-bottom: 2px solid #5b5fc7;
+			border-radius: 4px 4px 2px 2px;
+		}
+
+		.input:hover {
+			outline: 1px solid lightgrey;
+		}
+
+		.page-text {
+			flex-basis: 65%;
+		}
+
+		.center-header {
+			flex-basis: 100%;
+			transform: translateX(32vw);
+		}
 	</style>
-  </head>
-  <body>
+</head>
+
+<body>
 	<!-- progress bar -->
 	<div id="bar1" class="bar"></div>
-    <div id="bar2" class="bar"></div>
-    <div id="bar3" class="bar"></div>
-  
-    <!-- file input -->
+	<div id="bar2" class="bar"></div>
+	<div id="bar3" class="bar"></div>
+
+	<!-- file input -->
 	<input id="fileInput" type="file" />
-	
-    <div class="centered page1">
+
+	<div class="centered page1">
 		<img src="otulogo.png" width="200px" height="200px" />
 		<h3> Map Importer</h3>
 		<button id="select-osu" class="select" role="button">Select .osu File</button>
@@ -155,91 +173,92 @@
 	<script>
 		const { ipcRenderer } = require('electron');
 		const { exec } = require('child_process');
-		
-		let fs = require('fs');
-		let path = require('path');
+		const crypto = require('crypto');
+		const fs = require('fs');
+		const path = require('path');
+
 		let cmdOutput = '';
 		ipcRenderer.on('output-child', (event, code) => {
 			code = Array.from(code).map(x => String.fromCharCode(x)).join('');
 			cmdOutput += code;
 		});
-		
+
 		function enforceMinMax(el) {
-		  if (el.value != "") {
-			if (parseInt(el.value) < parseInt(el.min)) {
-			  el.value = el.min;
+			if (el.value != "") {
+				if (parseInt(el.value) < parseInt(el.min)) {
+					el.value = el.min;
+				}
+				if (parseInt(el.value) > parseInt(el.max)) {
+					el.value = el.max;
+				}
 			}
-			if (parseInt(el.value) > parseInt(el.max)) {
-			  el.value = el.max;
-			}
-		  }
 		}
-		
+
 		function readFile(buffer = false, accept = '*', filePath = false) {
 			return new Promise((resolve, reject) => {
-			// Create an input element
-			const fileInput = document.getElementById('fileInput');
-			fileInput.setAttribute('accept', accept);
-			// Trigger the file explorer
-			fileInput.click();
+				// Create an input element
+				const fileInput = document.getElementById('fileInput');
+				fileInput.setAttribute('accept', accept);
+				// Trigger the file explorer
+				fileInput.click();
 
-			// Event listener for when a file is selected
-			fileInput.onchange = event => {
-			  const file = event.target.files[0];
-			  if (accept !== '*' && !file.path.endsWith(accept)) {
-				alert(`Only files ending with ${accept} can be used! Try using a file ending with ${accept} instead.`);
-				reject(false);
-				return;
-			  }
-			  if (file && !filePath) {
-				const reader = new FileReader();
-				
-				reader.onload = function(e) {
-				  resolve(buffer ? Buffer.from(e.target.result) : e.target.result);
+				// Event listener for when a file is selected
+				fileInput.onchange = event => {
+					const file = event.target.files[0];
+					if (accept !== '*' && !file.path.endsWith(accept)) {
+						alert(`Only files ending with ${accept} can be used! Try using a file ending with ${accept} instead.`);
+						reject(false);
+						return;
+					}
+					if (file && !filePath) {
+						const reader = new FileReader();
+
+						reader.onload = function (e) {
+							resolve(buffer ? Buffer.from(e.target.result) : e.target.result);
+						};
+
+						reader.onerror = function (e) {
+							reject(e);
+						};
+
+						// Read the file as a string
+						buffer ? reader.readAsArrayBuffer(file) : reader.readAsText(file);
+						return;
+					} else {
+						resolve(file.path);
+					}
 				};
-				
-				reader.onerror = function(e) {
-				  reject(e);
-				};
-				
-				// Read the file as a string
-				buffer ? reader.readAsArrayBuffer(file) : reader.readAsText(file);
-				return;
-			  } else {
-				resolve(file.path);
-			  }
-			};
 			});
 		}
 		let bars = ['#bar1', '#bar2', '#bar3'];
 		let pages = ['.page1', '.page2', '.page3'];
 		let index = 0;
 		let step = (movePage = true) => {
-		  if (index == 3) return;
-		  let element = document.querySelector(bars[index]);
-		  let page = document.querySelector(pages[index]),
-		  nextpage = document.querySelector(pages[index + 1]);
+			if (index == 3) return;
+			let element = document.querySelector(bars[index]);
+			let page = document.querySelector(pages[index]),
+				nextpage = document.querySelector(pages[index + 1]);
 
-		  // Create a pseudo-element dynamically
-		  let pseudoElement = document.createElement('div');
+			// Create a pseudo-element dynamically
+			let pseudoElement = document.createElement('div');
 
-		  // Apply styles to the pseudo-element
-		  pseudoElement.style.content = "''";
-		  pseudoElement.style.position = 'absolute';
-		  pseudoElement.style.top = '0';
-		  pseudoElement.style.left = '0';
-		  pseudoElement.style.width = '0';
-		  pseudoElement.style.height = '100%';
-		  pseudoElement.style.backgroundColor = 'rgb(128, 55, 191)';
-		  pseudoElement.style.animation = 'expandLine 0.5s ease forwards';
+			// Apply styles to the pseudo-element
+			pseudoElement.style.content = "''";
+			pseudoElement.style.position = 'absolute';
+			pseudoElement.style.top = '0';
+			pseudoElement.style.left = '0';
+			pseudoElement.style.width = '0';
+			pseudoElement.style.height = '100%';
+			pseudoElement.style.backgroundColor = 'rgb(128, 55, 191)';
+			pseudoElement.style.animation = 'expandLine 0.5s ease forwards';
 
-		  // Add the pseudo-element to the specified element
-		  element.appendChild(pseudoElement);
-		  if (movePage) {
-			  page.style.transform = 'translateX(calc(-100vw))';
-			  nextpage.style.transform = 'translateX(calc(0vw))';
-		  }
-		  index++
+			// Add the pseudo-element to the specified element
+			element.appendChild(pseudoElement);
+			if (movePage) {
+				page.style.transform = 'translateX(calc(-100vw))';
+				nextpage.style.transform = 'translateX(calc(0vw))';
+			}
+			index++
 		}
 		const checkIfProcessIsRunning = (exeName) => {
 			return new Promise((resolve, reject) => {
@@ -261,6 +280,62 @@
 				});
 			});
 		};
+		/**
+		 * Compare buffer with files in the directory using SHA256 hash sums.
+		 *
+		 * @param {Buffer} buffer - The input buffer to compare.
+		 * @param {string} directory - The directory containing the files.
+		 * @returns {Promise<boolean>} - Returns a promise that resolves to true if at least one file has the same contents, otherwise false.
+		 */
+		async function hasMatchingFile(buffer, directory) {
+			// Generate SHA256 hash for the input buffer
+			const bufferHash = crypto.createHash('sha256').update(buffer).digest('hex');
+
+			// Read all files in the directory
+			const files = await fs.promises.readdir(directory);
+
+			for (const file of files) {
+				const filePath = path.join(directory, file);
+
+				// Ensure the path is a file
+				if ((await fs.promises.lstat(filePath)).isFile()) {
+					const fileHash = await hashFile(filePath);
+
+					// Compare hashes
+					if (fileHash === bufferHash) {
+						return file;
+					}
+				}
+			}
+
+			return false;
+		}
+
+		/**
+		 * Hashes a file using SHA256.
+		 *
+		 * @param {string} filePath - The path of the file to hash.
+		 * @returns {Promise<string>} - The SHA256 hash of the file.
+		 */
+		function hashFile(filePath) {
+			return new Promise((resolve, reject) => {
+				const hash = crypto.createHash('sha256');
+				const stream = fs.createReadStream(filePath);
+
+				stream.on('data', chunk => {
+					hash.update(chunk);
+				});
+
+				stream.on('end', () => {
+					resolve(hash.digest('hex'));
+				});
+
+				stream.on('error', err => {
+					reject(err);
+				});
+			});
+		}
+
 		let osuFile;
 		let mp3buf;
 		document.querySelector('#select-osu').addEventListener('click', async () => {
@@ -326,7 +401,13 @@
 			let songID = document.querySelector('#song-id').value || genRandID();
 			finish.style.cursor = "wait";
 			finish.disabled = true;
-			fs.writeFileSync(path.join(gd_path, songID + '.mp3'), mp3buf);
+			let full_song_path = path.join(gd_path, songID + '.mp3');
+			let existsAlready = await hasMatchingFile(mp3buf, gd_path);
+			if (!existsAlready) fs.writeFileSync(full_song_path, mp3buf);
+			else {
+				console.log('file path not overriden, copy found', existsAlready);
+				full_song_path = path.join(gd_path, existsAlready);
+			}
 			try {
 				await importOsu(osuFile, songID, levelName);
 			} catch (err) {
@@ -345,5 +426,6 @@
 		};
 		finish.onclick = complete;
 	</script>
-  </body>
+</body>
+
 </html>

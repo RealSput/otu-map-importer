@@ -1,5 +1,5 @@
 const MAP_ID = 30; // only use numbers 1 - 30 to avoid issue. this MUST be 30 for the public map importer.
- 
+
 extract({
 	// things below are not needed
 	/*
