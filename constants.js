@@ -11,7 +11,7 @@ extract({
 
 	//#// Dev Manual Entry //#//
 	// Please refer to the spreadsheet for what these values should be!
-	STAR_DIFFICULTY: 5.5, // might need manual entry - for now we put it here
+	STAR_DIFFICULTY: 7.1, // might need manual entry - for now we put it here
 	MAP_ORDERED_GROUP: (3260 + MAP_ID), // id of spawn ordered data - 3261 to 3290
 	DATA_MENU_GROUP: (3290 + MAP_ID), // id of menu data to be spawned in menu - 3291 to 3320
 	BPM_DATA_GROUP: (3220 + MAP_ID), // id of the bpm moves for this map - 3321 to 3350

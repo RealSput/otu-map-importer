@@ -58,12 +58,8 @@ let importOsu = async (osuFile, SONG_ID, outputMap = undefined) => {
     const ezOdMultiplier = 0.5;
     let hrOverallDifficulty = overallDifficulty * hrOdMultiplier;
     let ezOverallDifficulty = overallDifficulty * ezOdMultiplier;
-    if (overallDifficulty > 10) {
-        overallDifficulty = 10;
-    }
-    if (hrOverallDifficulty > 10) {
-        hrOverallDifficulty = 10;
-    }
+    if (overallDifficulty > 10) { overallDifficulty = 10; }
+    if (hrOverallDifficulty > 10) { hrOverallDifficulty = 10; }
     let perfectWindow = 80 - (6 * overallDifficulty);
     let goodWindow = 140 - (8 * overallDifficulty);
     let mehWindow = 200 - (10 * overallDifficulty);
@@ -393,7 +389,7 @@ let importOsu = async (osuFile, SONG_ID, outputMap = undefined) => {
     );
 
     if (mapIndex == 30) {
-        console.log(`adding imported map menu song trigger`, SONG_ID);
+        //console.log(`adding imported map menu song trigger`);
         $.add(
             object({
                 OBJ_ID: SONG_TRIGGER_ID,
@@ -427,21 +423,59 @@ let importOsu = async (osuFile, SONG_ID, outputMap = undefined) => {
                 GROUPS: group(9361) // group that spawns when editor map is hovered in menu
             })
         );
+
+        $.add(
+            object({
+                OBJ_ID: SONG_TRIGGER_ID,
+                X: -495 - X_OFFSET,
+                Y: 6675 - Y_OFFSET,
+                SONG_VOLUME: 1,
+                SONG_ID: SONG_ID,
+                SONG_LOOP: true,
+                408: previewTime, // start time
+                SONG_FADE_IN: 500,
+                SONG_CHANNEL: 4,
+                EDITOR_LAYER_1: 2,
+                SPAWN_TRIGGERED: true,
+                MULTI_TRIGGER: true,
+                GROUPS: group(9195)
+            })
+        );
+
+        $.add(
+            object({
+                // beatmap ID
+                OBJ_ID: ITEM_EDIT_TRIGGER_ID,
+                X: -495 - X_OFFSET,
+                Y: 6585 - Y_OFFSET,
+                ITEM_TARGET: 28,
+                ITEM_TARGET_TYPE: TIMER,
+                MOD: mapBPM,
+                EDITOR_LAYER_1: 2,
+                SPAWN_TRIGGERED: true,
+                MULTI_TRIGGER: true,
+                GROUPS: group(9195)
+            })
+        );
     }
 
     // set group and cycle variables for circles and sliders //
-    let circleMoves = new Circulator([156, 411, 470, 472, 558, 508, 555, 547,
-        1791, 1993, 1996, 1995, 1998, 1997, 1780, 1867
-    ].map(group));
-    let circleSpawns = new Circulator([11, 416, 469, 471, 557, 507, 554, 546,
-        1874, 1773, 2018, 1100, 2021, 1098, 2039, 2040
-    ].map(group));
-    let circleJudgementBars = new Circulator([1138, 1432, 1433, 1434, 1435, 1436, 1437, 1438,
-        2023, 2024, 2025, 2026, 1994, 2027, 2028, 2029
-    ].map(group));
-    let circleJudgementStopGroups = new Circulator([1439, 1440, 1441, 1442, 1443, 1444, 1445, 1446,
-        2031, 2032, 2033, 2034, 2035, 2036, 2037, 2038
-    ].map(group));
+    let circleMoves = new Circulator([
+        156, 411, 470, 472, 558, 508, 555, 547,
+        1791, 1993, 1996, 1995, 1998, 1997, 1780, 1867,
+        3676, 3829, 3831, 3830, 3834, 3832, 3758, 3738].map(group));
+    let circleSpawns = new Circulator([
+        11, 416, 469, 471, 557, 507, 554, 546,
+        1874, 1773, 2018, 1100, 2021, 1098, 2039, 2040,
+        3852, 3853, 3842, 3854, 3855, 3856, 3857, 3858].map(group));
+    let circleJudgementBars = new Circulator([
+        1138, 1432, 1433, 1434, 1435, 1436, 1437, 1438,
+        2023, 2024, 2025, 2026, 1994, 2027, 2028, 2029,
+        3843, 3825, 3781, 3783, 3647, 3805, 3844, 3798].map(group));
+    let circleJudgementStopGroups = new Circulator([
+        1439, 1440, 1441, 1442, 1443, 1444, 1445, 1446,
+        2031, 2032, 2033, 2034, 2035, 2036, 2037, 2038,
+        3859, 3860, 3861, 3862, 3863, 3864, 3865, 3866].map(group));
     circleMoves.prev();
     circleSpawns.prev();
     circleJudgementBars.prev();
@@ -458,8 +492,7 @@ let importOsu = async (osuFile, SONG_ID, outputMap = undefined) => {
     let sliderBallEndsR = [192, 566, 771, 913, 2680, 2682, 2684, 2686].map(group);
     let sliderBallStops = [207, 599, 769, 951, 2664, 2665, 2666, 2667].map(group);
     let sliderBallSpawnsL = [202, 602, 773, 797, 2086, 2288, 2446, 2523].map(group);
-    let sliderBallSpawnsR = [203, 609, 784, 932, 2088, 2303, 2378, 2538].map(group);
-    682
+    let sliderBallSpawnsR = [203, 609, 784, 932, 2088, 2303, 2378, 2538].map(group); 682
     let sliderJudgementBars = new Circulator([1448, 1449, 1450, 1451, 2651, 2652, 2260, 2116].map(group));
     let sliderJudgementStopGroups = new Circulator([1452, 1453, 1454, 1455, 2668, 2669, 2670, 2671].map(group));
     sliderLengthCounters.prev();
@@ -481,7 +514,7 @@ let importOsu = async (osuFile, SONG_ID, outputMap = undefined) => {
 
     // set slider movement triggers //
     // this is based on bpm so must be done here instead of hand coded to allow for all map types
-    let sliderMoveDuration = ((((60000 / mapBPM) * 4) / 1000) * 1).toFixed(2); // 64 blocks if 4, 1 = 16, currently on 1
+    let sliderMoveDuration = ((((60000 / mapBPM) * 4) / 1000) * 2).toFixed(2); // 64 blocks if 4, 1 = 16, double move time
     for (let gaming = 0; gaming < sliderBalls.length; gaming++) {
         let combinedL = [sliderBallStops[gaming], sliderBallSpawnsL[gaming], group(BPM_DATA_GROUP)];
         let combinedR = [sliderBallStops[gaming], sliderBallSpawnsR[gaming], group(BPM_DATA_GROUP)];
@@ -569,9 +602,7 @@ let importOsu = async (osuFile, SONG_ID, outputMap = undefined) => {
         const isNextNewCombo = nextHitObject && nextHitObject.hitType & HitType.NewCombo;
 
         // Get the X Position to place the triggers (as they are spawned via spawn ordered)
-        if (firstObject) {
-            introOffset = hitObject.startTime;
-        }
+        if (firstObject) { introOffset = hitObject.startTime; }
         const startingTime = hitObject.startTime;
         let x_pos = (startingTime / 1000) * X_VELOCITY_BPS * 30;
         x_pos = x_pos - (introOffset / 1000) * X_VELOCITY_BPS * 30;
@@ -670,19 +701,14 @@ let importOsu = async (osuFile, SONG_ID, outputMap = undefined) => {
         }
 
         // get and set hitsounds
-        let sampleSet = "None";
-        let additionSet = "None";
-        let customIndex = 0;
-        let volume = 0;
+        let sampleSet = "None"; let additionSet = "None"; let customIndex = 0; let volume = 0;
         hitObject.samples.forEach(sample => {
             sampleSet = sample.sampleSet;
             additionSet = sample.hitSound;
             customIndex = sample.customIndex;
             volume = sample.volume;
         });
-        if (customIndex != 0) {
-            customIndex = 0;
-        }
+        if (customIndex != 0) { customIndex = 0; }
 
         let currentSamplePointIndex = 0;
         // find the current samplePoint to refrence if values are 0
@@ -937,7 +963,7 @@ let importOsu = async (osuFile, SONG_ID, outputMap = undefined) => {
             let degrees = (Math.atan2(end.y - start.y, end.x - start.x) * 180) / Math.PI;
             let degreesHR = (Math.atan2(start.y - end.y, end.x - start.x) * 180) / Math.PI;
             Math.round(degrees);
-            Math.round(degreesHR); // reduces bugs with annoying numbers,
+            Math.round(degreesHR); // reduces issues with annoying numbers,
             // nobody will care about 12.03 degrees instead of 12.00 lol
             let currentSliderVelocity = getCurrentSliderVelocity(startingTime, timingPointsArray);
             let velocityScale = (
@@ -1079,10 +1105,7 @@ let importOsu = async (osuFile, SONG_ID, outputMap = undefined) => {
                     GROUPS: mapGroup
                 })
             );
-            previousLengthScaleValues.push({
-                target: sliderLengthScaleTarget,
-                scale: lengthVal
-            });
+            previousLengthScaleValues.push({ target: sliderLengthScaleTarget, scale: lengthVal });
             // place scale trigger - velocity
             $.add(
                 object({
@@ -1098,10 +1121,7 @@ let importOsu = async (osuFile, SONG_ID, outputMap = undefined) => {
                     GROUPS: mapGroup
                 })
             );
-            previousVelocityScaleValues.push({
-                target: sliderVelocityScaleTarget,
-                scale: velocityScale
-            });
+            previousVelocityScaleValues.push({ target: sliderVelocityScaleTarget, scale: velocityScale });
             // place itemedit trigger - reverse count
             $.add(
                 object({
@@ -1167,10 +1187,7 @@ let importOsu = async (osuFile, SONG_ID, outputMap = undefined) => {
                     GROUPS: normalGroups
                 })
             );
-            previousRotateDegrees.push({
-                target: sliderRotateTarget,
-                degrees: degrees
-            });
+            previousRotateDegrees.push({ target: sliderRotateTarget, degrees: degrees });
             $.add(
                 object({
                     OBJ_ID: ROTATE_TRIGGER_ID,
@@ -1186,10 +1203,7 @@ let importOsu = async (osuFile, SONG_ID, outputMap = undefined) => {
                     GROUPS: hrGroups
                 })
             );
-            previousHRRotateDegrees.push({
-                target: sliderRotateTarget,
-                degrees: degreesHR
-            });
+            previousHRRotateDegrees.push({ target: sliderRotateTarget, degrees: degreesHR });
             // place pickup trigger - hitsounds
             $.add(
                 object({
@@ -1432,6 +1446,7 @@ let importOsu = async (osuFile, SONG_ID, outputMap = undefined) => {
         let cursorMovementPos = 0;
         let objCenterGroup = 9998;
         let cursorMovementDuration = 0;
+        let dynamicMove = false;
         //console.log('--------------------------------------------');
         //console.log('OBJECT',index,);
 
@@ -1448,6 +1463,7 @@ let importOsu = async (osuFile, SONG_ID, outputMap = undefined) => {
         if (hitObject.hitType && hitObject.hitType & HitType.Spinner) {
             //exitTime = hitObject.startTime + fadeInOffset + hitObject.duration;
             exitTime = hitObject.endTime + preempt;
+            dynamicMove = true;
         }
         //console.log('start:',exitTime);
 
@@ -1492,6 +1508,7 @@ let importOsu = async (osuFile, SONG_ID, outputMap = undefined) => {
                     TARGET_POS: objCenterGroup,
                     TARGET_DIR_CENTER: group(107), // center ID (top left of trigger)
                     EASING: 1, // ease in out (for now)
+                    '397': dynamicMove,
                     EDITOR_LAYER_1: 4,
                     SPAWN_TRIGGERED: true,
                     MULTI_TRIGGER: true,
@@ -1969,9 +1986,7 @@ let importOsu = async (osuFile, SONG_ID, outputMap = undefined) => {
     let normalHPDgroups = [group(1477), group(1691)];
     let ezHPDgroups = [group(1477), group(1692)];
     let hrHPDgroups = [group(1477), group(1693)];
-    if (hpDrain < 0.1) {
-        hpDrain = 0.1;
-    }
+    if (hpDrain < 0.1) { hpDrain = 0.1; }
     let drainMoveTime = ((mapObjCount / totalCombos) / (hpDrain * 2.5)) * 30;
     let drainLengthMultiplier = (mapLength / 1000) / drainMoveTime;
     $.add(
@@ -2006,9 +2021,7 @@ let importOsu = async (osuFile, SONG_ID, outputMap = undefined) => {
         })
     );
     let hrDrainDist = ((-200 * drainLengthMultiplier) * 1.3);
-    if (hrDrainDist > 10) {
-        hrDrainDist = 10
-    }
+    if (hrDrainDist > 10) { hrDrainDist = 10 }
     $.add(
         object({
             OBJ_ID: MOVE_TRIGGER_ID,
@@ -2030,11 +2043,7 @@ let importOsu = async (osuFile, SONG_ID, outputMap = undefined) => {
     // kiai timeline placement
     for (let epicGaming = 0; epicGaming < effectPointsArray.length; epicGaming++) {
         let kiaiPointPos = ((effectPointsArray[epicGaming][0] - introOffset) / 1000) * X_VELOCITY_BPS * 30;
-        if (effectPointsArray[epicGaming][1]) {
-            kiai = 1
-        } else {
-            kiai = 0
-        };
+        if (effectPointsArray[epicGaming][1]) { kiai = 1 } else { kiai = 0 };
         $.add(
             object({
                 OBJ_ID: PICKUP_TRIGGER_ID,
@@ -2282,8 +2291,7 @@ let importOsu = async (osuFile, SONG_ID, outputMap = undefined) => {
     console.log(`OBJ: total=${mapObjCount}, circles=${circleCount}, sliders=${sliderCount}, spinners=${spinnerCount}`);
     console.log(`------------------------`);
     console.log(`o/`);
-}
-
+};
 console.log('script fork running');
 let args = process.argv.slice(2);
 console.log('args', args);

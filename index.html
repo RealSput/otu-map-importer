@@ -292,7 +292,8 @@
 			const bufferHash = crypto.createHash('sha256').update(buffer).digest('hex');
 
 			// Read all files in the directory
-			const files = await fs.promises.readdir(directory);
+			let files = await fs.promises.readdir(directory);
+			files = files.filter(x => x.endsWith('.mp3') && x.startsWith('999'));
 
 			for (const file of files) {
 				const filePath = path.join(directory, file);
