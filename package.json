@@ -4,7 +4,7 @@
   "main": "index.js",
   "scripts": {
     "start": "electron .",
-    "build": "rm -r dist & yarn add osu-classes osu-parsers circulator @g-js-api/g.js && npx electron-builder build --win portable",
+    "build": "yarn add osu-classes osu-parsers circulator @g-js-api/g.js && npx electron-builder build --win portable",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "license": "ISC",
