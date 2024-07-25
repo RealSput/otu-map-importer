@@ -70,7 +70,7 @@ let importOsu = async (osuFile, SONG_ID, outputMap = undefined) => {
     let goodWindowHR = 140 - (8 * hrOverallDifficulty);
     let mehWindowHR = 200 - (10 * hrOverallDifficulty);
     let introOffset = 0; // updated based on the first object offset in milliseconds
-    let approachRate = arRange.reduce((prev, curr) =>
+    let approachRate = arRange.reduce((prev, curr) => 
         Math.abs(curr - approachRateUnfiltered) < Math.abs(prev - approachRateUnfiltered) ? curr : prev);
     let preempt = 1200 - (750 * (approachRate - 5)) / 5; // always greater than 5.00 in GD so we can use this equation
     let preemptPos = (preempt / 1000) * X_VELOCITY_BPS * 30;
@@ -81,11 +81,11 @@ let importOsu = async (osuFile, SONG_ID, outputMap = undefined) => {
     // read difficulty, kiai, and break points. these are later placed on the timeline
     let difficultyPoints = beatmap.controlPoints.difficultyPoints;
     const timingPointsArray = difficultyPoints.map(point => [point.group.startTime, point.sliderVelocityUnlimited]);
-
+    
     let effectPoints = beatmap.controlPoints.effectPoints;
     const effectPointsArray = effectPoints.map(point => [point.group.startTime, point.kiai]);
     let kiai = 0;
-
+    
     let samplePoints = beatmap.controlPoints.samplePoints;
     const samplePointsArray = samplePoints.map(point => [point.group.startTime, point.sampleSet, point.customIndex, point.volume]);
     //console.log(samplePointsArray);
@@ -305,12 +305,15 @@ let importOsu = async (osuFile, SONG_ID, outputMap = undefined) => {
     );
     $.add(
         object({
-            // map time
+            // map time, multiplied by itemID 521
             OBJ_ID: ITEM_EDIT_TRIGGER_ID,
             X: -200,
             Y: 150,
             ITEM_TARGET: 506,
             ITEM_TARGET_TYPE: TIMER,
+            ITEM_ID_1: 521,
+            TYPE_1: TIMER,
+            OP_2: MUL,
             MOD: mapLength / 1000,
             SPAWN_TRIGGERED: true,
             MULTI_TRIGGER: true,
@@ -319,12 +322,15 @@ let importOsu = async (osuFile, SONG_ID, outputMap = undefined) => {
     );
     $.add(
         object({
-            // bpm
+            // bpm, multiplied by itemID 520
             OBJ_ID: ITEM_EDIT_TRIGGER_ID,
             X: -200,
             Y: 120,
             ITEM_TARGET: 517,
             ITEM_TARGET_TYPE: TIMER,
+            ITEM_ID_1: 520,
+            TYPE_1: TIMER,
+            OP_2: MUL,
             MOD: mapBPM,
             SPAWN_TRIGGERED: true,
             MULTI_TRIGGER: true,
@@ -492,7 +498,7 @@ let importOsu = async (osuFile, SONG_ID, outputMap = undefined) => {
     let sliderBallEndsR = [192, 566, 771, 913, 2680, 2682, 2684, 2686].map(group);
     let sliderBallStops = [207, 599, 769, 951, 2664, 2665, 2666, 2667].map(group);
     let sliderBallSpawnsL = [202, 602, 773, 797, 2086, 2288, 2446, 2523].map(group);
-    let sliderBallSpawnsR = [203, 609, 784, 932, 2088, 2303, 2378, 2538].map(group); 682
+    let sliderBallSpawnsR = [203, 609, 784, 932, 2088, 2303, 2378, 2538].map(group);
     let sliderJudgementBars = new Circulator([1448, 1449, 1450, 1451, 2651, 2652, 2260, 2116].map(group));
     let sliderJudgementStopGroups = new Circulator([1452, 1453, 1454, 1455, 2668, 2669, 2670, 2671].map(group));
     sliderLengthCounters.prev();
@@ -2217,7 +2223,7 @@ let importOsu = async (osuFile, SONG_ID, outputMap = undefined) => {
     $.add(
         object({
             OBJ_ID: SONG_TRIGGER_ID,
-            X: preemptPos - ((5 / 1000) * (X_VELOCITY_BPS * 30)),
+            X: preemptPos - ((5/1000) * (X_VELOCITY_BPS * 30)),
             Y: 100,
             LOAD_PREP: true,
             SONG_CHANNEL: 2,
@@ -2230,7 +2236,7 @@ let importOsu = async (osuFile, SONG_ID, outputMap = undefined) => {
     $.add(
         object({
             OBJ_ID: SONG_TRIGGER_ID,
-            X: preemptPos - ((10 / 1000) * (X_VELOCITY_BPS * 30)),
+            X: preemptPos - ((10/1000) * (X_VELOCITY_BPS * 30)),
             Y: 100,
             LOAD_PREP: true,
             SONG_CHANNEL: 3,
@@ -2244,7 +2250,7 @@ let importOsu = async (osuFile, SONG_ID, outputMap = undefined) => {
     $.add(
         object({
             OBJ_ID: SPAWN_TRIGGER_ID,
-            X: preemptPos - ((480 / 1000) * (X_VELOCITY_BPS * 30)),
+            X: preemptPos - ((480/1000) * (X_VELOCITY_BPS * 30)),
             Y: 70,
             TARGET: group(3059),
             SPAWN_TRIGGERED: true,
