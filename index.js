@@ -12,7 +12,7 @@ const createWindow = () => {
       contextIsolation: false
     }
   });
-  // win.removeMenu();
+  win.removeMenu();
   win.resizable = false;
   win.loadFile('index.html');
 }
