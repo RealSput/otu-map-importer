@@ -12,7 +12,7 @@ const createWindow = () => {
       contextIsolation: false
     }
   });
-  win.removeMenu();
+  // win.removeMenu();
   win.resizable = false;
   win.loadFile('index.html');
 }
@@ -47,5 +47,3 @@ ipcMain.on('spawn-process', (event, arg) => {
     event.sender.send('finished-write', code);
   });
 });
-
-// aaa

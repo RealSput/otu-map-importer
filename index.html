@@ -160,7 +160,7 @@
 	</div>
 	<div class="centered page2">
 		<h1> Song Selection </h1>
-		<button id="select-song" class="select" role="button">Select .mp3 File</button>
+		<button id="select-song" class="select" role="button">Select .mp3/.ogg File</button>
 	</div>
 	<div class="centered page3">
 		<h1 class="center-header"> Advanced Settings </h1>
@@ -194,6 +194,17 @@
 			}
 		}
 
+		function hasValidExtension(filePath, accepts) {
+			// Extract extensions from the `accepts` attribute string
+			const extensions = accepts.split(',').map(ext => ext.trim().replace('.', ''));
+
+			// Create a regex pattern from the extensions list
+			const pattern = new RegExp(`\\.(${extensions.join('|')})$`, 'i');
+
+			// Test if the file path matches the pattern
+			return pattern.test(filePath);
+		}
+		let readFilePath;
 		function readFile(buffer = false, accept = '*', filePath = false) {
 			return new Promise((resolve, reject) => {
 				// Create an input element
@@ -205,11 +216,12 @@
 				// Event listener for when a file is selected
 				fileInput.onchange = event => {
 					const file = event.target.files[0];
-					if (accept !== '*' && !file.path.endsWith(accept)) {
+					if (accept !== '*' && !hasValidExtension(file.path, accept)) {
 						alert(`Only files ending with ${accept} can be used! Try using a file ending with ${accept} instead.`);
 						reject(false);
 						return;
 					}
+					readFilePath = file.path;
 					if (file && !filePath) {
 						const reader = new FileReader();
 
@@ -293,7 +305,7 @@
 
 			// Read all files in the directory
 			let files = await fs.promises.readdir(directory);
-			files = files.filter(x => x.endsWith('.mp3') && x.startsWith('999'));
+			files = files.filter(x => hasValidExtension(x, '.mp3, .ogg') && x.startsWith('999'));
 
 			for (const file of files) {
 				const filePath = path.join(directory, file);
@@ -344,14 +356,14 @@
 			step();
 		});
 		document.querySelector('#select-song').addEventListener('click', async () => {
-			mp3buf = await readFile(true, '.mp3');
+			mp3buf = await readFile(true, '.mp3, .ogg');
 			step();
 		});
 		function getRandomFourDigitInteger() {
 			return Math.floor(1000 + Math.random() * 9000).toString();
 		}
 		let gd_path = `${process.env.localappdata}\\GeometryDash`;
-		let songs = fs.readdirSync(gd_path).filter(x => x.endsWith('.mp3'));
+		let songs = fs.readdirSync(gd_path).filter(x => hasValidExtension(x, '.mp3, .ogg'));
 		let genRandID = () => {
 			let randDigit = '999' + getRandomFourDigitInteger();
 			while (songs.includes(randDigit)) {
@@ -402,7 +414,9 @@
 			let songID = document.querySelector('#song-id').value || genRandID();
 			finish.style.cursor = "wait";
 			finish.disabled = true;
-			let full_song_path = path.join(gd_path, songID + '.mp3');
+			let fileExt = readFilePath.slice(readFilePath.length - 4, readFilePath.length);
+			console.log('gay', fileExt)
+			let full_song_path = path.join(gd_path, songID + fileExt);
 			let existsAlready = await hasMatchingFile(mp3buf, gd_path);
 			if (!existsAlready) fs.writeFileSync(full_song_path, mp3buf);
 			else {
