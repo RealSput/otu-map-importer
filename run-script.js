@@ -18,12 +18,14 @@ console.log(`OSU TO GD CONVERTER`);
 console.log(`------------------------`);
 
 //#// Parse the .osu File //#//
-let importOsu = async (osuFile, SONG_ID, outputMap = undefined) => {
+let importOsu = async (osuFile, SONG_ID, replaceMap = 'false', outputMap = undefined) => {
     await $.exportConfig({
         type: "savefile",
         options: {
             info: true,
-            level_name: outputMap
+            level_name: outputMap,
+            replacePastObjects: replaceMap,
+            removeGroup: CHART_GROUP,
         }
     });
 
@@ -49,7 +51,7 @@ let importOsu = async (osuFile, SONG_ID, outputMap = undefined) => {
     const dataGroup = group(DATA_MENU_GROUP);
     const bpmGroup = group(BPM_DATA_GROUP);
     const cursorGroup = group(CURSOR_GROUP);
-    const timerSpawnGroup = group(TIMER_SPAWN_GROUP);
+    const timerSpawnGroup = group(ROTATE_SPAWN_GROUP);
     const bpmOffGroup = group(BPM_OFF_GROUP);
     const songSpawnGroup = group(SONG_SPAWN_GROUP);
     const mapIndex = MAP_INDEX; // number from 1 - 30
@@ -70,7 +72,7 @@ let importOsu = async (osuFile, SONG_ID, outputMap = undefined) => {
     let goodWindowHR = 140 - (8 * hrOverallDifficulty);
     let mehWindowHR = 200 - (10 * hrOverallDifficulty);
     let introOffset = 0; // updated based on the first object offset in milliseconds
-    let approachRate = arRange.reduce((prev, curr) => 
+    let approachRate = arRange.reduce((prev, curr) =>
         Math.abs(curr - approachRateUnfiltered) < Math.abs(prev - approachRateUnfiltered) ? curr : prev);
     let preempt = 1200 - (750 * (approachRate - 5)) / 5; // always greater than 5.00 in GD so we can use this equation
     let preemptPos = (preempt / 1000) * X_VELOCITY_BPS * 30;
@@ -81,11 +83,11 @@ let importOsu = async (osuFile, SONG_ID, outputMap = undefined) => {
     // read difficulty, kiai, and break points. these are later placed on the timeline
     let difficultyPoints = beatmap.controlPoints.difficultyPoints;
     const timingPointsArray = difficultyPoints.map(point => [point.group.startTime, point.sliderVelocityUnlimited]);
-    
+
     let effectPoints = beatmap.controlPoints.effectPoints;
     const effectPointsArray = effectPoints.map(point => [point.group.startTime, point.kiai]);
     let kiai = 0;
-    
+
     let samplePoints = beatmap.controlPoints.samplePoints;
     const samplePointsArray = samplePoints.map(point => [point.group.startTime, point.sampleSet, point.customIndex, point.volume]);
     //console.log(samplePointsArray);
@@ -414,6 +416,17 @@ let importOsu = async (osuFile, SONG_ID, outputMap = undefined) => {
             })
         );
 
+        $.add( // menu update for new, remove defaults
+            object({
+                OBJ_ID: TOGGLE_TRIGGER_ID,
+                X: -200 - X_OFFSET,
+                Y: 0 - Y_OFFSET,
+                TARGET: group(4095),
+                56: false, // is toggle on checked
+                SPAWN_TRIGGERED: false
+            })
+        );
+
         $.add(
             object({
                 // beatmap ID
@@ -498,7 +511,7 @@ let importOsu = async (osuFile, SONG_ID, outputMap = undefined) => {
     let sliderBallEndsR = [192, 566, 771, 913, 2680, 2682, 2684, 2686].map(group);
     let sliderBallStops = [207, 599, 769, 951, 2664, 2665, 2666, 2667].map(group);
     let sliderBallSpawnsL = [202, 602, 773, 797, 2086, 2288, 2446, 2523].map(group);
-    let sliderBallSpawnsR = [203, 609, 784, 932, 2088, 2303, 2378, 2538].map(group);
+    let sliderBallSpawnsR = [203, 609, 784, 932, 2088, 2303, 2378, 2538].map(group); 682
     let sliderJudgementBars = new Circulator([1448, 1449, 1450, 1451, 2651, 2652, 2260, 2116].map(group));
     let sliderJudgementStopGroups = new Circulator([1452, 1453, 1454, 1455, 2668, 2669, 2670, 2671].map(group));
     sliderLengthCounters.prev();
@@ -522,8 +535,8 @@ let importOsu = async (osuFile, SONG_ID, outputMap = undefined) => {
     // this is based on bpm so must be done here instead of hand coded to allow for all map types
     let sliderMoveDuration = ((((60000 / mapBPM) * 4) / 1000) * 2).toFixed(2); // 64 blocks if 4, 1 = 16, double move time
     for (let gaming = 0; gaming < sliderBalls.length; gaming++) {
-        let combinedL = [sliderBallStops[gaming], sliderBallSpawnsL[gaming], group(BPM_DATA_GROUP)];
-        let combinedR = [sliderBallStops[gaming], sliderBallSpawnsR[gaming], group(BPM_DATA_GROUP)];
+        let combinedL = [sliderBallStops[gaming], sliderBallSpawnsL[gaming], bpmGroup];
+        let combinedR = [sliderBallStops[gaming], sliderBallSpawnsR[gaming], bpmGroup];
         $.add(
             object({
                 OBJ_ID: MOVE_TRIGGER_ID,
@@ -972,11 +985,20 @@ let importOsu = async (osuFile, SONG_ID, outputMap = undefined) => {
             Math.round(degreesHR); // reduces issues with annoying numbers,
             // nobody will care about 12.03 degrees instead of 12.00 lol
             let currentSliderVelocity = getCurrentSliderVelocity(startingTime, timingPointsArray);
-            let velocityScale = (
+            /*let velocityScale = (
                 ((hitObject.velocity * 100) / 120) *
                 (currentSliderVelocity * sliderMulti)
-            ).toFixed(3);
+            ).toFixed(3);*/
+
             //let velocityScale = (currentSliderVelocity * sliderMulti).toFixed(3);
+            let velocityScale = ((hitObject.velocity * 100) / 60).toFixed(3);
+
+            //console.log("----------------00");
+            //console.log(hitObject.velocity);
+            //console.log(currentSliderVelocity);
+            //console.log(sliderMulti);
+            //console.log(velocityScale);
+            //console.log("----------------00");
 
             // undo previous placements if they exist
             const scaleLengthIndex = previousLengthScaleValues.findIndex(
@@ -1942,7 +1964,7 @@ let importOsu = async (osuFile, SONG_ID, outputMap = undefined) => {
             OBJ_ID: SPAWN_TRIGGER_ID,
             X: firstObjectPos,
             Y: 620,
-            TARGET: group(223),
+            TARGET: timerSpawnGroup,
             SPAWN_DURATION: (((beatmap.totalLength - introOffset) / 1000) / 2).toFixed(2),
             SPAWN_TRIGGERED: true,
             MULTI_TRIGGER: true,
@@ -1989,19 +2011,88 @@ let importOsu = async (osuFile, SONG_ID, outputMap = undefined) => {
     );
 
     // hp drain code and such and soforth
-    let normalHPDgroups = [group(1477), group(1691)];
-    let ezHPDgroups = [group(1477), group(1692)];
-    let hrHPDgroups = [group(1477), group(1693)];
-    if (hpDrain < 0.1) { hpDrain = 0.1; }
-    let drainMoveTime = ((mapObjCount / totalCombos) / (hpDrain * 2.5)) * 30;
-    let drainLengthMultiplier = (mapLength / 1000) / drainMoveTime;
+    let normalHPDgroups = [group(1477), group(1691), mapGroup, group(MAP_TOGGLE_GROUP_NEW)];
+    let ezHPDgroups = [group(1477), group(1692), mapGroup, group(MAP_TOGGLE_GROUP_NEW)];
+    let hrHPDgroups = [group(1477), group(1693), mapGroup, group(MAP_TOGGLE_GROUP_NEW)];
+    let hpDrainFixed = hpDrain;
+    if (hpDrainFixed < 0.1) { hpDrainFixed = 0.1; }
+
+    ////
+    /*
+    let objectDensity = (mapObjCount) / (mapLength / 1000);
+    if (objectDensity < 1) { objectDensity = 1 }
+    let drainMultiplier = ((mapObjCount / totalCombos) / (hpDrainFixed * 0.9)) / objectDensity;
+    let drainLength = (mapLength / 1000) * drainMultiplier * 20 * (1 / objectDensity);
+    */
+    let objectDensity = (mapObjCount) / (mapLength / 1000);
+    if (objectDensity < 1) { objectDensity = 1 }
+    let drainMultiplier = ((mapObjCount / totalCombos) / (hpDrainFixed * 0.9));
+    let drainLength = (((mapLength / 1000) * drainMultiplier * 20 * (1 / Math.sqrt(objectDensity))) ** 0.75) * 0.9;
+
+    console.log(mapLength);
+    console.log(objectDensity);
+    console.log(totalCombos);
+    console.log(drainMultiplier);
+    console.log(drainLength);
+
+    ///
+    /*
+    
+    hpd 5 - WAY TOO FAST
+    131528.000
+    6.880664193175598
+    231
+    0.12653006253006252
+    48.37395227327103 < Ideal ~150 - 160
+    
+    hpd 4 - GOOD
+    130344.000
+    3.1455226170748176
+    129
+    0.28067183462532297
+    232.6092930555643 < Ideal ~225 - 235
+    
+    hpd 3 - WAY TOO SLOW (INSANE SLOW)
+    126050.000
+    1.2217374057913526
+    29
+    1.6098339719029375
+    3321.819749423629 < Ideal ~550 - 575
+    
+    hpd 5 - GOOD
+    101050.000
+    4.275111331024245
+    95
+    0.23637426900584796
+    111.74268005468919 < Ideal ~105 - 115
+    
+    */
+    /*
+    let objectDensity = (mapObjCount) / (mapLength / 1000);
+    if (objectDensity < 1) { objectDensity = 1 }
+    console.log(objectDensity);
+    let drainMultiplier = (((mapObjCount / totalCombos) / (Math.pow(hpDrainFixed, 0.75))) * 10) / objectDensity;
+    //let drainMultiplier = ((mapObjCount / totalCombos) / (hpDrainFixed / 0.95));
+    let drainLength = (mapLength / 1000) * drainMultiplier * 10; // 10 to account for some bullshit!
+    //console.log(mapObjCount);
+    //console.log(totalCombos);
+    //console.log(drainMultiplier);
+    console.log(drainLength);
+    //console.log("to go");
+    */
+    let drainDist = -3250;
+
+    let ezDrainDist = drainDist / 2;
+
+    let hrDrainDist = drainDist * 1.3;
+
     $.add(
         object({
             OBJ_ID: MOVE_TRIGGER_ID,
             X: 0,
             Y: 550,
-            DURATION: drainMoveTime * drainLengthMultiplier,
-            MOVE_X: -200 * drainLengthMultiplier,
+            DURATION: drainLength,
+            MOVE_X: drainDist,
             MOVE_Y: 0,
             TARGET: group(1475), // hp bar and collisions
             SPAWN_TRIGGERED: true,
@@ -2015,8 +2106,8 @@ let importOsu = async (osuFile, SONG_ID, outputMap = undefined) => {
             OBJ_ID: MOVE_TRIGGER_ID,
             X: 0,
             Y: 550,
-            DURATION: drainMoveTime * drainLengthMultiplier,
-            MOVE_X: (-200 * drainLengthMultiplier) / 2,
+            DURATION: drainLength,
+            MOVE_X: ezDrainDist,
             MOVE_Y: 0,
             TARGET: group(1475), // hp bar and collisions
             SPAWN_TRIGGERED: true,
@@ -2026,14 +2117,12 @@ let importOsu = async (osuFile, SONG_ID, outputMap = undefined) => {
             GROUPS: ezHPDgroups
         })
     );
-    let hrDrainDist = ((-200 * drainLengthMultiplier) * 1.3);
-    if (hrDrainDist > 10) { hrDrainDist = 10 }
     $.add(
         object({
             OBJ_ID: MOVE_TRIGGER_ID,
             X: 0,
             Y: 550,
-            DURATION: drainMoveTime * drainLengthMultiplier,
+            DURATION: drainLength,
             MOVE_X: hrDrainDist,
             MOVE_Y: 0,
             TARGET: group(1475), // hp bar and collisions
@@ -2042,6 +2131,18 @@ let importOsu = async (osuFile, SONG_ID, outputMap = undefined) => {
             EDITOR_LAYER_1: 2,
             SMALL_STEP: true,
             GROUPS: hrHPDgroups
+        })
+    );
+    $.add(
+        object({
+            OBJ_ID: TOGGLE_TRIGGER_ID,
+            X: -30,
+            Y: 550,
+            TARGET: group(MAP_TOGGLE_GROUP_NEW),
+            56: true, // is toggle on checked
+            SPAWN_TRIGGERED: true,
+            MULTI_TRIGGER: true,
+            GROUPS: mapGroup
         })
     );
     //console.log(drainMoveTime, drainLengthMultiplier, drainMoveTime * drainLengthMultiplier, -200 * drainLengthMultiplier);
@@ -2223,7 +2324,7 @@ let importOsu = async (osuFile, SONG_ID, outputMap = undefined) => {
     $.add(
         object({
             OBJ_ID: SONG_TRIGGER_ID,
-            X: preemptPos - ((5/1000) * (X_VELOCITY_BPS * 30)),
+            X: preemptPos - ((5 / 1000) * (X_VELOCITY_BPS * 30)),
             Y: 100,
             LOAD_PREP: true,
             SONG_CHANNEL: 2,
@@ -2236,7 +2337,7 @@ let importOsu = async (osuFile, SONG_ID, outputMap = undefined) => {
     $.add(
         object({
             OBJ_ID: SONG_TRIGGER_ID,
-            X: preemptPos - ((10/1000) * (X_VELOCITY_BPS * 30)),
+            X: preemptPos - ((10 / 1000) * (X_VELOCITY_BPS * 30)),
             Y: 100,
             LOAD_PREP: true,
             SONG_CHANNEL: 3,
@@ -2250,7 +2351,7 @@ let importOsu = async (osuFile, SONG_ID, outputMap = undefined) => {
     $.add(
         object({
             OBJ_ID: SPAWN_TRIGGER_ID,
-            X: preemptPos - ((480/1000) * (X_VELOCITY_BPS * 30)),
+            X: preemptPos - ((480 / 1000) * (X_VELOCITY_BPS * 30)),
             Y: 70,
             TARGET: group(3059),
             SPAWN_TRIGGERED: true,
@@ -2289,7 +2390,7 @@ let importOsu = async (osuFile, SONG_ID, outputMap = undefined) => {
     console.log(`14/AR: ${approachRate}`);
     console.log(`60/CS: ${circleSize}`);
     console.log(`61/HPD: ${hpDrain}`);
-    console.log(`T2D: ${drainMoveTime}`);
+    console.log(`HP Move Time: ${drainLength}`);
     console.log(`BPM: ${mapBPM}`);
     console.log(`LEN: ${mapLength / 1000} sec`);
     console.log(`BaseSliderMP: ${sliderMulti}`);

@@ -5,7 +5,7 @@ let path = require('path');
 const createWindow = () => {
   const win = new BrowserWindow({
     width: 800,
-    height: 600,
+    height: 700,
     webPreferences: {
       devTools: true,
       nodeIntegration: true,
@@ -41,6 +41,9 @@ ipcMain.on('spawn-process', (event, arg) => {
   child.stderr.on('data', (msg) => {
     console.log(`Error message from child: ${msg}`);
     event.sender.send('output-child', msg)
+  });
+  child.stdout.on('data', (msg) => {
+    console.log(`log:`, msg.toString());
   });
   child.on('exit', (code) => {
     console.log(`exited with code ${code}`);

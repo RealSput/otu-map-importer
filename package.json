@@ -13,7 +13,7 @@
     "electron": "23.1.3"
   },
   "dependencies": {
-    "@g-js-api/g.js": "^4.1.1",
+    "@g-js-api/g.js": "^5.1.4",
     "awesome-logging": "^1.1.4",
     "circulator": "^1.2.0",
     "osu-classes": "^3.1.0",
