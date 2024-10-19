@@ -1,7 +1,10 @@
 # otu-map-importer
 GUI for importing Osu! maps into Otu!
 
-Maintained by bestgamer08 (Discord username for DMs)
+Maintained by bestgamer08 (Discord usernames for DMs), made for CreatorCreepy's Geometry Dash level Otu!
+
+# Disclaimer
+The Otu! Map Importer is provided "as is", and we are not responsible for any data loss, bugs, or other issues that may occur with its usage. Use at your own risk, it is suggested you save or back up your GD data before using this tool!
 
 # Instructions
 - Copy the Otu! level (ID: comig soom).
